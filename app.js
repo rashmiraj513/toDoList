@@ -4,7 +4,8 @@ const mongoose = require("mongoose")
 const _ = require("lodash")
 
 // Connecting to the localhost of mongoose.
-mongoose.connect("mongodb+srv://admin-rashmi:XwLQ7k5k*UkT4ZT@todolist.asvvi.mongodb.net/toDoListDB?retryWrites=true&w=majority", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
+// mongoose.connect("mongodb+srv://admin-rashmi:XwLQ7k5k*UkT4ZT@todolist.asvvi.mongodb.net/toDoListDB?retryWrites=true&w=majority", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
+mongoose.connect("mongodb://localhost:27017/toDoListDB", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
 
 app.use(express.urlencoded())
 app.use(express.static("public"))
@@ -12,7 +13,7 @@ app.use(express.static("public"))
 app.set('view engine', 'ejs')
 
 // Schema for items
-const itemSchema = new mongoose.Schema({
+const itemSchema = new mongoose.Schema ({
     name: String
 });
 
@@ -26,7 +27,7 @@ const listSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please check the name, no name specified!"]
     },
-    items: []
+    items: [itemSchema]
 })
 
 const List = mongoose.model("List", listSchema);
@@ -95,19 +96,22 @@ app.post("/delete", function(req, res) {
     if(listName === "Today") {
         Item.findByIdAndRemove(checkedItemId, function(err) {
             if(!err) {
-                // console.log("Successfully deleted checked item.");
                 res.redirect("/");
             }
         });
     } else {
-        List.findOneAndDelete({name: listName}, {$pull: {items: {_id: checkedItemId}}}, function(err, foundList) {
-            if(!err) {
+        List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}, function(err, foundList) {
+            if(err) {
+                console.log(err);
+            } else {
                 res.redirect("/" + listName);
             }
-        }) 
+        })
     }
 })
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Server is started on port 3000.");
 })
+
+// https://glacial-sierra-50025.herokuapp.com/ is the link for heroku app deployment for this web application.
