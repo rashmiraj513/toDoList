@@ -35,12 +35,12 @@ const List = mongoose.model("List", listSchema);
 app.get("/", function(req, res) {
     Item.find({}, (err, foundItems) => {
         if(err) {
-            console.log(err);
+            throw err;
         } else {
             if(foundItems.length === 0) {
                 Item.insertMany([item1, item2, item3], (err) => {
                     if(err) {
-                        console.log(err);
+                        throw err;
                     }
                 });
                 res.redirect("/")
@@ -54,7 +54,9 @@ app.get("/", function(req, res) {
 app.get("/:customListName", function(req, res) {
     customListName = _.capitalize(req.params.customListName);
     List.findOne({name: customListName}, function(err, foundList) {
-        if(!err) {
+        if(err) {
+            throw err;
+        } else {
             if(!foundList) {
                 const newList = new List({
                     name: customListName,
@@ -79,12 +81,16 @@ app.post("/", function(req, res) {
         res.redirect("/");
     } else {
         List.findOne({name: listName}, function(err, foundList) {
-            foundList.items.push(item)
-            foundList.save();
-            res.redirect("/" + listName);
-        })
+            if(err) {
+                throw err;
+            } else {
+                foundList.items.push(item)
+                foundList.save();
+                res.redirect("/" + listName);
+            }
+        });
     }
-})
+});
 
 app.get("/about", function(req, res) {
     res.render('about')
@@ -95,14 +101,16 @@ app.post("/delete", function(req, res) {
     const listName = req.body.listName;
     if(listName === "Today") {
         Item.findByIdAndRemove(checkedItemId, function(err) {
-            if(!err) {
+            if(err) {
+                throw err;
+            } else {
                 res.redirect("/");
             }
         });
     } else {
         List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}, function(err, foundList) {
             if(err) {
-                console.log(err);
+                throw err;
             } else {
                 res.redirect("/" + listName);
             }
