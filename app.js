@@ -4,8 +4,8 @@ const mongoose = require("mongoose")
 const _ = require("lodash")
 
 // Connecting to the localhost of mongoose.
-// mongoose.connect("mongodb+srv://admin-rashmi:XwLQ7k5k*UkT4ZT@todolist.asvvi.mongodb.net/toDoListDB?retryWrites=true&w=majority", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
-mongoose.connect("mongodb://localhost:27017/toDoListDB", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
+mongoose.connect("mongodb+srv://admin-rashmi:XwLQ7k5k*UkT4ZT@todolist.asvvi.mongodb.net/toDoListDB?retryWrites=true&w=majority", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
+// mongoose.connect("mongodb://localhost:27017/toDoListDB", {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
 
 app.use(express.urlencoded())
 app.use(express.static("public"))
